@@ -69,11 +69,10 @@ def message(win):
     winner = ""
     if win == "O":
         winner = "You win!"
-    elif win == "X":
+    if win == "X":
         winner = "I win!"
-    else:
-        if win == "Draw":
-            winner = "Draw"
+    if win == "Draw":
+        winner = "Draw"
     messagebox.showinfo(title="Game Over", message=winner)
     window.destroy()
 
@@ -90,8 +89,6 @@ def free():
 def machine_move():
     global your_turn
     free_now = free()
-    if len(free_now) == 0:
-        message("draw")
     now = free_now[random.randrange(0, len(free_now))]
     print(now)
     butt = board[now[0]][now[1]]
@@ -99,6 +96,10 @@ def machine_move():
     butt["fg"] = "red"
     butt["bg"] = "white"
     wins("X")
+    still_free = free()
+    # Now if draw messagebox is called.
+    if not still_free:
+        message("Draw")
     your_turn = True
 
 
@@ -120,39 +121,25 @@ window.title("TicTacToe")
 window.minsize(250, 250)
 
 board = [[None for c in range(3)] for r in range(3)]
-print(board)
-# None
-# The sole value of the type NoneType. None is frequently used to represent
-# the absence of a value, as when default arguments are not passed to a
-# function. Assignments to None are illegal and raise a SyntaxError.
 
-# THE GAME WORKS BUT... gives this exception when game is over
-# Exception in Tkinter callback
-# Traceback (most recent call last):
-#   File "C:\...__init__.py", line 1883, in __call__
-#     return self.func(*args)
-#   File "C:/...6_lab.py", line 111, in move
-#     machine_move()
-#   File "C:....6_lab.py", line 91, in machine_move
-#     free_now = free()
-#   File "C:/....1.1.6_lab.py", line 81, in free
-#     if board[r][c]["text"] == "":
-#   File "C:\Us....__init__.py", line 1643, in cget
-#     return self.tk.call(self._w, 'cget', '-' + key)
-# _tkinter.TclError: invalid command name ".!button"
-#
-# Process finished with exit code 0
+# THE GAME WORKS BUT... gives an exception when game is over
+# --> Exception in Tkinter callback
 
+# Fixed to dynamically resize applications.
+# Added the rowconfigure(), columnconfigure() Grid methods.
+# Add sticky parameter on widget’s grid() method.
 for row in range(3):
+    tk.Grid.rowconfigure(window, row, weight=1)
     for col in range(3):
+        tk.Grid.columnconfigure(window, col, weight=1)
         if row == 1 and col == 1:
             cell = tk.Button(window, text="X", fg="red",
                              font=("Arial", "32"), width=3)
-            cell.grid(row=1, column=1)
+            cell.grid(row=1, column=1, sticky="NSEW")
         else:
             cell = tk.Button(window, text="", bg="grey",
                              font=("Arial", "32"), width=3)
-            cell.grid(row=row, column=col)
+            cell.grid(row=row, column=col, sticky="NSEW")
         cell.bind("<Button-1>", move)
         board[row][col] = cell
 
