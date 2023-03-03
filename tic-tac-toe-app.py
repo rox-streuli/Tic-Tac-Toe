@@ -53,6 +53,9 @@ import random
 
 
 def wins(win):
+    # Set board as global
+    # Check for a wining line.
+    global board
     for x in range(3):
         if win == board[x][0]["text"] == board[x][1]["text"] == board[x][2]["text"]:
             return message(win)
@@ -65,18 +68,28 @@ def wins(win):
     return None
 
 
+# Changed messagebox.showinfo for messagebox.askyesno
+# Return True or False. 
+# Restart game if True, end game if False.
 def message(win):
     winner = ""
     if win == "O":
-        winner = "You win!"
+        winner = "You win! Play again?"
     if win == "X":
-        winner = "I win!"
+        winner = "I win! Play again?"
     if win == "Draw":
-        winner = "Draw"
-    messagebox.showinfo(title="Game Over", message=winner)
-    window.destroy()
+        winner = "Draw. Play again?"
+    answer = messagebox.askyesno(title="Game Over",
+                                 message=winner)
+    if not answer:
+        # If False close game.
+        window.destroy()
+    else:
+        # If True restart game.
+        play()
 
 
+# Check for free cells.
 def free():
     free_cells = []
     for c in range(3):
@@ -86,6 +99,7 @@ def free():
     return free_cells
 
 
+# Check for free cells and select at random one and set an "X".
 def machine_move():
     global your_turn
     free_now = free()
@@ -97,8 +111,8 @@ def machine_move():
     butt["bg"] = "white"
     wins("X")
     still_free = free()
-    # Now if draw messagebox is called.
     if not still_free:
+        # If empty messagebox is called.
         message("Draw")
     your_turn = True
 
@@ -117,32 +131,44 @@ def move(event):
 
 
 window = tk.Tk()
-window.title("TicTacToe")
+window.title("Tic-Tac-Toe")
 window.minsize(250, 250)
 
+your_turn = True
 board = [[None for c in range(3)] for r in range(3)]
-
-# THE GAME WORKS BUT... gives an exception when game is over
-# --> Exception in Tkinter callback
 
 # Fixed to dynamically resize applications.
 # Added the rowconfigure(), columnconfigure() Grid methods.
 # Add sticky parameter on widget’s grid() method.
-for row in range(3):
-    tk.Grid.rowconfigure(window, row, weight=1)
-    for col in range(3):
-        tk.Grid.columnconfigure(window, col, weight=1)
-        if row == 1 and col == 1:
-            cell = tk.Button(window, text="X", fg="red",
-                             font=("Arial", "32"), width=3)
-            cell.grid(row=1, column=1, sticky="NSEW")
-        else:
-            cell = tk.Button(window, text="", bg="grey",
-                             font=("Arial", "32"), width=3)
-            cell.grid(row=row, column=col, sticky="NSEW")
-        cell.bind("<Button-1>", move)
-        board[row][col] = cell
 
-your_turn = True
 
-window.mainloop()
+# Added play() function for starting a new game.
+def play():
+    global your_turn
+    global board
+    print(board)
+    for row in range(3):
+        tk.Grid.rowconfigure(window, row, weight=1)
+        for col in range(3):
+            tk.Grid.columnconfigure(window, col, weight=1)
+            if row == 1 and col == 1:
+                cell = tk.Button(window, text="X", fg="red",
+                                 font=("Arial", "32"), width=3)
+                cell.grid(row=1, column=1, sticky="NSEW")
+            else:
+                cell = tk.Button(window, text="", bg="grey",
+                                 font=("Arial", "32"), width=3)
+                cell.grid(row=row, column=col, sticky="NSEW")
+            cell.bind("<Button-1>", move)
+            board[row][col] = cell
+
+    your_turn = True
+    window.mainloop()
+
+
+# Added conditional statement.
+if __name__ == "__main__":
+    play()
+
+# Never try to fix your code while feeling unwell. The answer could
+# be in front of your eyes and still not see it.
