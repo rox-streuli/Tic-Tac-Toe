@@ -132,7 +132,7 @@ def move(event):
 
 window = tk.Tk()
 window.title("Tic-Tac-Toe")
-window.minsize(250, 250)
+window.minsize(350, 350)
 
 your_turn = True
 board = [[None for c in range(3)] for r in range(3)]
